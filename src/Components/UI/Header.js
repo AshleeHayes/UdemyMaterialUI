@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import { Tabs, Tab, Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { Menu, MenuItem } from '@material-ui/core'
+import { Menu, MenuItem } from "@material-ui/core";
 import logo from "../../assets/logo.svg";
 function ElevationScroll(props) {
   const { children } = props;
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   logoContainer: {
     padding: 0,
     "&:hover": {
-        backgroundColor: 'transparent'
+      backgroundColor: "transparent"
     }
   },
   tabContainer: {
@@ -57,6 +57,18 @@ const useStyles = makeStyles(theme => ({
     textTransform: "none",
     height: "45px",
     color: "white"
+  },
+  menu: {
+    backgroundColor: theme.palette.common.blue,
+    color: "white",
+    borderRadius: "0px"
+  },
+  menuItem: {
+    ...theme.typography.tab,
+    opacity: 0.7,
+    "&:hover": {
+      opacity: 1
+    }
   }
 }));
 
@@ -64,25 +76,39 @@ export default function Header(props) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
   // value hook anchor element and set anchor element, both hooks. useState- state that will store the clicked componenent and where we want it to render. here- eventually the service tab
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [anchorEl, setAnchorEl] = useState(null);
   // determine visiblity of menu
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleChange = (e, value) => {
     setValue(value);
   };
 
   // e is click event. setanchorelement tells us where we want it renedered. currenttarget contains ting just clicked
-  const handleClick = (e) => {
-  setAnchorEl(e.currentTarget)
-  setOpen(true)
-}
+  const handleClick = e => {
+    setAnchorEl(e.currentTarget);
+    setOpen(true);
+  };
 
-const handleClose = (e) => {
-  setAnchorEl(null)
-  // tell menu to close
-  setOpen(false)
-}
+  const handleMenuItemClick = (e, i) => {
+    setAnchorEl(null);
+    setOpen(false);
+    setSelectedIndex(i);
+  };
+
+  const handleClose = e => {
+    setAnchorEl(null);
+    // tell menu to close
+    setOpen(false);
+  };
+
+  const menuOptions = [
+    { name: "Services", link: "/services" },
+    { name: "Custom Software Development", link: "/customsoftware" },
+    { name: "Mobile App Development", link: "/mobileapps" },
+    { name: "Website Development", link: "/websites" }
+  ];
 
   useEffect(() => {
     // says: if we are trying to access just the / homepage route AND we have not already set that correct value, then we will go in and call setvalue with 0 to set correct active tab
@@ -107,7 +133,13 @@ const handleClose = (e) => {
       <ElevationScroll>
         <AppBar position="fixed">
           <Toolbar disableGutters={true} className={classes.logo}>
-            <Button component={Link} to="/" className={classes.logoContainer} onClick={() => setValue(0)} disableRipple>
+            <Button
+              component={Link}
+              to="/"
+              className={classes.logoContainer}
+              onClick={() => setValue(0)}
+              disableRipple
+            >
               <img src={logo} alt="company logo" className={classes.logo} />
             </Button>
             <Tabs
@@ -129,7 +161,7 @@ const handleClose = (e) => {
                 aria-haspopup={anchorEl ? "true" : undefined}
                 className={classes.tab}
                 component={Link}
-                onClick={event => handleClick(event)}
+                onMouseOver={event => handleClick(event)}
                 to="/services"
                 label="Services"
               />
@@ -159,11 +191,31 @@ const handleClose = (e) => {
             >
               Free Estimate
             </Button>
-
-            <Menu id="simple-menu" anchorEl={anchorEl} open={open} onClose={handleClose}>
-              <MenuItem onClick={handleClose}>Custom Software Development</MenuItem>
-              <MenuItem onClick={handleClose}>Mobile App Development</MenuItem>
-              <MenuItem onClick={handleClose}>Website Development</MenuItem>
+            k
+            <Menu
+              id="simple-menu"
+              k
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              classes={{ paper: classes.menu }}
+              MenuListProps={{ onMouseLeave: handleClose }}
+              elevation={0}
+            >
+              {menuOptions.map((option, i) => (
+                <MenuItem
+                  key={option}
+                  component={Link}
+                  to={option.link}
+                  classes={{ root: classes.menuItem }}
+                  onClick={event => {
+                    handleMenuItemClick(event, i);
+                  }}
+                  selected={i === selectedIndex && value === 1}
+                >
+                  {option.name}
+                </MenuItem>
+              ))}
             </Menu>
           </Toolbar>
         </AppBar>
