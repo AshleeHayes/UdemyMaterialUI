@@ -7,6 +7,12 @@ import { makeStyles } from "@material-ui/styles";
 import { Tabs, Tab, Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Menu, MenuItem } from "@material-ui/core";
+
+import useMediaQuery from '@material-ui/core/useMediaQuery'
+import {useTheme} from '@material-ui/core/styles'
+import { SwipeableDrawer } from '@material-ui/core'
+import { MenuIcon } from '@material-ui/icons'
+
 import logo from "../../assets/logo.svg";
 function ElevationScroll(props) {
   const { children } = props;
@@ -28,10 +34,22 @@ const useStyles = makeStyles(theme => ({
     // example of spread
     // refer to documentation under default theme
     ...theme.mixins.toolbar,
-    marginBottom: "3em"
+    marginBottom: "3em",
+    [theme.breakpoints.down('md')]: {
+      height: '2em'
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: '1.25em'
+    }
   },
   logo: {
-    height: "7em"
+    height: "7em",
+    [theme.breakpoints.down('md')]: {
+      height: '7em'
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: '5.5em'
+    }
   },
   logoContainer: {
     padding: 0,
@@ -74,6 +92,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header(props) {
   const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'))
   const [value, setValue] = useState(0);
   // value hook anchor element and set anchor element, both hooks. useState- state that will store the clicked componenent and where we want it to render. here- eventually the service tab
   const [anchorEl, setAnchorEl] = useState(null);
@@ -128,21 +148,9 @@ export default function Header(props) {
   }, [value]);
   // warning useeffect tells it to set value, doesn't provide dependencies could cause a loop. so we need to pass along with object an array of the dependencies we are using in useeffect, here it is the value constant
 
-  return (
-    <React.Fragment>
-      <ElevationScroll>
-        <AppBar position="fixed">
-          <Toolbar disableGutters={true} className={classes.logo}>
-            <Button
-              component={Link}
-              to="/"
-              className={classes.logoContainer}
-              onClick={() => setValue(0)}
-              disableRipple
-            >
-              <img src={logo} alt="company logo" className={classes.logo} />
-            </Button>
-            <Tabs
+const tabs = (
+  <React.Fragment>
+ <Tabs
               value={value}
               onChange={handleChange}
               className={classes.tabContainer}
@@ -217,6 +225,24 @@ export default function Header(props) {
                 </MenuItem>
               ))}
             </Menu>
+  </React.Fragment>
+)
+
+  return (
+    <React.Fragment>
+      <ElevationScroll>
+        <AppBar position="fixed">
+          <Toolbar disableGutters={true} className={classes.logo}>
+            <Button
+              component={Link}
+              to="/"
+              className={classes.logoContainer}
+              onClick={() => setValue(0)}
+              disableRipple
+            >
+              <img src={logo} alt="company logo" className={classes.logo} />
+            </Button>
+           {matches ? null : tabs}
           </Toolbar>
         </AppBar>
       </ElevationScroll>
